@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Rate Movies{% endblock %}
+
+{% block body %}
+  <h1>Rate Movies</h1>
+<form action="/rating" method="POST" >
+    <label for="lang-select">Choose Movie:</label>
+    <select name="movie.title" id="lang-select">
+        {% for movie in movies %}
+      <option value="movie_name"> {{movie.title}}</option>
+      {% endfor %}
+    </select>
+    
+    <label for="rating_select">Rate the Movie</label>
+  <select name="ratings" id="rating_select">
+    {% for i in ratings %}
+    <option value ="rating_num"> {{i}} </option>
+    {% endfor %}
+  </select>
+
+  <input type="submit" value="Submit" class="myButton">
+  </form>
+
+
+  {% endblock %}

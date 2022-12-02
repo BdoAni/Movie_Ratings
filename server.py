@@ -7,6 +7,7 @@ from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
 
+
 app = Flask(__name__)
 
 app.secret_key = "dev"
@@ -68,6 +69,49 @@ def show_profile(user_id):
     
     return render_template("user_details.html", user = user)
 
+@app.route("/login", methods = ["POST"])
+def user_login_page():
+    password = request.form.get("password")
+    email = request.form.get("email")
+    user_password = crud.check_user_by_password(password, email)
+
+    if user_password:
+        flash("Logged in!")
+        session["email"] = email
+        return redirect("/")
+    else:
+        flash("Incorrect password or email")
+        return redirect("/")
+
+@app.route("/rating")
+def rate_movies():
+    movies = crud.get_movies()
+    ratings = range(1, 6)
+    
+    return render_template("rating.html", movies=movies, ratings=ratings)
+
+@app.route("/rating", methods=["POST"])
+def add_rating(movie_id):
+    logged_in_email = session.get("email")
+
+    rating = request.form.get('ratings')
+    movie_id =request.form.get(movie)
+
+    if logged_in_email is None:
+        flash("You must log in to rate a movie.")
+    elif not rating:
+        flash("Error: you didn't select a score for your rating.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        movie = crud.get_movie_by_id(movie_id)
+
+        rating = crud.create_rating(user, movie, int(rating))
+        db.session.add(rating)
+        db.session.commit()
+
+        flash(f"You rated this movie {rating} out of 5.")
+
+    return redirect("/")
 
 if __name__ == "__main__":
     connect_to_db(app)

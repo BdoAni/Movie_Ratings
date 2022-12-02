@@ -49,6 +49,18 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
+def check_user_by_password(password, email):
+    """Return a user by password."""
+    # given this email -> get the password in the database for it
+    # then compare that password form database to what user wrote
+    
+    if User.query.filter(User.password == password).first() and User.query.filter(User.email == email).first():
+        return True
+    else:
+        return False
+
+    
+
 if __name__ == '__main__':
     from server import app
     connect_to_db(app)
